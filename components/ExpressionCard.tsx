@@ -29,15 +29,10 @@ export function ExpressionCard({ item }: ExpressionCardProps) {
         <div className="space-y-3 border-t border-zinc-100 pt-4 dark:border-zinc-800">
           <div>
             <p className="text-sm font-semibold text-zinc-400 uppercase tracking-tight">
-              Example
+              What&apos;s the situation?
             </p>
-            <p className="mt-1 text-zinc-800 dark:text-zinc-200 leading-relaxed">
-              {item.example_en}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 italic">
-              {item.example_kr}
+            <p className="mt-1 text-zinc-800 dark:text-zinc-200 leading-relaxed line-clamp-2">
+              {item.content?.situation || "No description available."}
             </p>
           </div>
         </div>
