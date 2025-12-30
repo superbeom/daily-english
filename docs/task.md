@@ -15,7 +15,7 @@
 
 - [x] 메인 페이지 UI 구현 (Card List)
 - [x] Supabase 데이터 Fetching 로직 구현 (ISR)
-- [ ] 상세 페이지 구현 (Modal or Page)
+- [x] 상세 페이지 구현 (Modal or Page)
 
 ## Phase 3: Automation (자동화)
 
