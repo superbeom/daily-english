@@ -1,0 +1,105 @@
+# Project Context & Rules: Daily English
+
+**최종 수정일**: 2025-12-30
+
+## 1. 프로젝트 개요 (Project Overview)
+
+- **서비스명**: Daily English (매일 만나는 영어 표현)
+- **목적**: 영어 블로그 URL에서 유용한 표현을 자동으로 스크래핑 및 가공(AI)하여 업로드하는 자동화 블로그 구축.
+- **핵심 가치**:
+  - **자동화 (Automation)**: n8n + AI를 통해 콘텐츠 수집 및 가공 비용 최소화.
+  - **학습 효율 (Efficiency)**: 매일 하나의 핵심 표현만 제공하여 학습 부담 감소.
+  - **SEO 최적화**: Next.js의 ISR을 활용하여 검색 엔진 친화적인 콘텐츠 제공.
+
+## 2. 시스템 아키텍처 (System Architecture)
+
+```mermaid
+graph TD
+    subgraph Automation [n8n Workflow]
+        Scheduler[Daily Trigger] -->|1. Start| Scraper[HTTP Request]
+        Source[Blog URLs] -->|Source| Scraper
+        Scraper -->|2. HTML Content| AI[Gemini 1.5 Flash]
+        AI -->|3. Extract & Format| JSON[Structured Data]
+        JSON -->|4. Insert| DB[(Supabase DB)]
+    end
+
+    subgraph Service [Next.js App]
+        DB -->|5. Fetch Data| ISR[Incremental Static Regeneration]
+        ISR -->|6. Render| UI[Card Interface]
+        User[Visitor] -->|7. Read| UI
+    end
+```
+
+## 3. 기술 스택 (Tech Stack)
+
+- **Frontend**: Next.js 15 (App Router), TypeScript, Tailwind CSS.
+- **Database**: Supabase (PostgreSQL).
+- **Automation**: n8n (Self-hosted or Cloud).
+- **AI Engine**: Google Gemini 1.5 Flash (Free Tier).
+- **Package Manager**: yarn.
+
+## 4. 디렉토리 구조 (Directory Structure)
+
+```
+daily-english/
+├── app/                 # Next.js App Router Pages
+│   ├── page.tsx         # 메인 페이지 (표현 리스트)
+│   ├── layout.tsx       # 레이아웃
+│   └── globals.css      # 전역 스타일
+├── components/          # React 컴포넌트
+│   └── ui/              # 재사용 가능한 UI 컴포넌트 (Card, Button 등)
+├── lib/                 # 핵심 로직 및 유틸리티
+│   ├── supabase/        # Supabase 클라이언트 설정 (server/client)
+│   └── utils.ts         # 공통 유틸리티 함수
+├── types/               # TypeScript 타입 정의
+│   └── database.types.ts # Supabase Generated Types
+├── docs/                # 프로젝트 문서의 중앙 저장소 (Docs as Code)
+│   ├── project_context.md   # 전체 프로젝트의 규칙, 아키텍처, 상태 정의 (Single Source of Truth)
+│   ├── project_history.md   # 주요 의사결정 이력 및 Q&A 로그
+│   ├── task.md              # 작업 목록 및 진행 상태 관리
+│   ├── future_todos.md      # 기술 부채, 아이디어, 개선 사항 백로그
+│   ├── walkthrough.md       # 버전별 기능 구현 상세 및 검증 내역
+│   ├── database_schema.md   # DB 스키마 정의
+│   ├── n8n_workflow_guide.md # n8n 자동화 설정 가이드
+│   ├── git_convention.md    # 커밋 메시지 작성 규칙
+│   └── git_branch_strategy.md # 브랜치 생성 및 관리 전략
+└── ...설정 파일들
+```
+
+## 5. 코딩 컨벤션 (Coding Conventions)
+
+### General
+
+- **언어**: TypeScript 엄수. `any` 사용 지양.
+- **절대 경로**: `@/` alias 사용 (예: `import { createClient } from '@/lib/supabase/server'`).
+
+### Frontend
+
+- **스타일링**: Tailwind CSS 유틸리티 클래스 사용. 커스텀 CSS 지양.
+- **데이터 페칭**: Server Components에서 직접 DB 접근을 선호하며, 클라이언트 측은 필요한 경우에만 최소화.
+- **타입 안정성**: DB 데이터는 Supabase에서 생성된 타입을 사용하거나 명시적 인터페이스로 정의.
+
+### Automation (n8n)
+
+- **에러 처리**: 스크래핑 실패나 AI 응답 오류 시에도 워크플로우가 중단되지 않도록 Error Trigger 또는 대체 로직 구성.
+- **비용 관리**: Gemini API 호출 시 토큰 절약을 위해 불필요한 HTML 태그는 사전 제거.
+
+## 6. 워크플로우 가이드라인 (Workflow Guidelines)
+
+1.  **세션 시작 (Initialization)**:
+    - 작업 전 `docs/project_history.md`와 `docs/task.md`를 확인하여 이전 작업 내용 및 우선순위를 파악합니다.
+2.  **Git 전략**:
+    - `docs/git_branch_strategy.md`에 따라 기능별 브랜치(`feat/...`)를 생성하여 작업합니다.
+    - `docs/git_convention.md`에 맞춰 커밋 메시지를 작성합니다 ("Why" 중심).
+3.  **이력 기록 및 작업 관리**:
+    - 주요 변경 사항은 `project_history.md`에, 구현 상세는 `walkthrough.md`에 기록합니다.
+    - 진행 중인 작업은 `task.md`에서 실시간으로 업데이트합니다.
+4.  **기술 부채 관리**:
+    - 코드 개선이 필요하거나 추후 작업이 필요한 항목은 `future_todos.md`에 기록합니다.
+5.  **문서화**:
+    - DB 스키마 변경 시 `docs/database_schema.md`를 반드시 최신화합니다.
+
+## 7. 주요 제약 사항 & 이슈
+
+- **Gemini Free Tier**: 분당 15회 요청 제한이 있으므로, n8n 루프 실행 시 `Wait` 노드를 통해 속도를 조절해야 함.
+- **Supabase Free Tier**: 데이터베이스 용량(500MB)을 고려하여 불필요한 로그 데이터는 주기적으로 정리 필요.
