@@ -7,7 +7,7 @@
 ### 핵심 개념
 
 - **물리적 통합**: 하나의 Supabase Pro Project ($25/월)를 모든 서비스가 공유합니다.
-- **논리적 분리**: 각 서비스는 고유한 **Schema** (예: `style_studio`, `nix_chat`)를 사용하여 데이터와 권한을 격리합니다.
+- **논리적 분리**: 각 서비스는 고유한 **Schema** (예: `daily_english`, `nix_chat`)를 사용하여 데이터와 권한을 격리합니다.
 
 ## 2. 장점 (Pros)
 
@@ -23,13 +23,13 @@
 
 ```sql
 -- 1. 스키마 생성
-CREATE SCHEMA style_studio;
+CREATE SCHEMA daily_english;
 
 -- 2. 권한 설정 (선택사항: 특정 역할에만 접근 허용 시)
-GRANT USAGE ON SCHEMA style_studio TO anon, authenticated, service_role;
-GRANT ALL ON ALL TABLES IN SCHEMA style_studio TO anon, authenticated, service_role;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA style_studio TO anon, authenticated, service_role;
-GRANT ALL ON ALL ROUTINES IN SCHEMA style_studio TO anon, authenticated, service_role;
+GRANT USAGE ON SCHEMA daily_english TO anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA daily_english TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA daily_english TO anon, authenticated, service_role;
+GRANT ALL ON ALL ROUTINES IN SCHEMA daily_english TO anon, authenticated, service_role;
 ```
 
 ### 3.2. API 노출 설정 (Exposing Schema)
@@ -38,32 +38,53 @@ Supabase 대시보드에서 해당 스키마를 API로 접근 가능하도록 �
 
 1.  **Settings** -> **Data API** 로 이동
 2.  **Exposed schemas** 섹션 찾기
-3.  `public` 외에 추가한 스키마(예: `style_studio`)를 리스트에 추가
+3.  `public` 외에 추가한 스키마(예: `daily_english`)를 리스트에 추가
 4.  저장 (Save)
 
 ### 3.3. 클라이언트 연결 (Client Setup)
 
 클라이언트(Frontend/Backend)에서 Supabase 초기화 시 스키마를 명시하거나, 쿼리 시 스키마를 지정해야 합니다.
+유지보수성을 위해 스키마 이름은 `lib/constants.ts`에서 상수로 중앙 관리합니다.
 
-**Python (Backend) 예시:**
-
-```python
-# 보통 기본 client는 public을 바라보므로, 테이블 명시나 스키마 설정 필요
-# client.schema("style_studio").from_("users").select("*").execute()
+**`lib/constants.ts`**:
+```typescript
+export const DATABASE_SCHEMA = "daily_english";
 ```
 
-**JavaScript (Frontend) 예시:**
+**`lib/supabase/client.ts` (Browser Client)**:
+```typescript
+import { createBrowserClient } from "@supabase/ssr";
+import { DATABASE_SCHEMA } from "@/lib/constants";
 
-```javascript
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  db: { schema: "style_studio" },
-});
+export function createBrowserSupabase() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      db: { schema: DATABASE_SCHEMA },
+    }
+  );
+}
+```
+
+**`lib/supabase/server.ts` (Server Client)**:
+```typescript
+// ... imports ...
+import { DATABASE_SCHEMA } from "@/lib/constants";
+
+export async function createServerSupabase() {
+  // ... cookie logic ...
+  return createServerClient(..., {
+    db: { schema: DATABASE_SCHEMA },
+    // ...
+  });
+}
 ```
 
 ## 4. 확장 및 졸업 (Migration & Graduation)
 
 특정 서비스의 트래픽이 급증하여 다른 서비스에 영향을 줄 경우:
 
-1.  **덤프 (Dump)**: 해당 스키마(`style_studio`)의 데이터만 백업합니다.
+1.  **덤프 (Dump)**: 해당 스키마(`daily_english`)의 데이터만 백업합니다.
 2.  **이관 (Migrate)**: 새로운 Supabase 프로젝트를 생성하여 데이터를 복원합니다.
 3.  **연결 변경**: 해당 서비스의 환경 변수(`SUPABASE_URL` 등)만 새 프로젝트로 교체합니다.

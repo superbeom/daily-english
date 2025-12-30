@@ -2,6 +2,25 @@
 
 > 최신 항목이 상단에 위치합니다.
 
+## 2025-12-30: n8n 자동화 파이프라인 완성 및 DB 스키마 분리
+
+### ✅ 진행 사항
+
+- n8n 자동화 워크플로우(스크래핑 -> Gemini -> Supabase) 테스트 성공.
+- **다중 프로젝트 전략 적용**: `public` 스키마 대신 `daily_english` 스키마 도입.
+- **코드 리팩토링**: DB 스키마명을 `lib/constants.ts`에서 상수로 중앙 관리하고, Supabase 클라이언트(`lib/supabase/*`)가 이를 자동으로 참조하도록 수정.
+- **권한 문제 해결**: n8n(Supabase API) 접근 시 발생한 `permission denied` 및 `Invalid schema` 오류를 해결하기 위해 RLS 비활성화 및 명시적 권한 부여 SQL 스크립트 작성 (`database/002_fix_permissions.sql`).
+
+### 💬 주요 Q&A 및 의사결정
+
+**Q. 왜 스키마 이름을 상수로 관리하는가?**
+
+- **A.** 코드 내 `daily_english`라는 문자열이 하드코딩되면 추후 변경 시 누락 위험이 큼. `lib/constants.ts`에 정의하고 이를 `createBrowserSupabase`, `createServerSupabase`에서 참조함으로써 유지보수성을 높이고 실수를 방지함.
+
+**Q. n8n에서 "Invalid schema" 에러가 발생한 이유는?**
+
+- **A.** Supabase의 `public` 스키마 외에 커스텀 스키마를 사용할 경우, Data API 설정에서 해당 스키마를 **Expose** 해주지 않으면 외부에서 접근할 수 없음. 또한, DB 레벨에서도 `GRANT USAGE` 권한이 필요함.
+
 ## 2025-12-30: n8n 자동화 환경 구축
 
 ### ✅ 진행 사항

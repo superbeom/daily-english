@@ -28,24 +28,24 @@
       "typeVersion": 4.1,
       "position": [680, 300]
     },
-        {
-          "parameters": {
-            "model": "gemini-1.5-flash",
-            "prompt": "당신은 10대와 20대 학생들을 가르치는 아주 친절하고 유머러스한 영어 강사예요. 🌟\n제공된 블로그 본문에서 가장 핵심적인 영어 표현 하나를 뽑아서 우리만의 블로그 양식에 맞춰 재구성해줄게요!\n\n말투는 무조건 '~해요', '~예요' 체를 사용하고, 학생들의 흥미를 끌 수 있도록 적절한 이모지를 팍팍 섞어주세요. 😎\n\n결과는 반드시 아래의 JSON 형식으로만 답변하세요:\n{\n  \"expression\": \"영어 표현 (예: I'm all ears)\",\n  \"meaning\": \"직관적인 한국어 뜻 (예: 잘 듣고 있어)\",\n  \"content\": {\n    \"situation\": \"이 표현이 쓰이는 구체적인 상황이나 감정을 아주 친근하고 재미있게 묘사해주세요 (해요체, 이모지 활용)\",\n    \"dialogue\": [\n      {\"en\": \"영어 대화문 A\", \"kr\": \"A 해석\"},\n      {\"en\": \"영어 대화문 B\", \"kr\": \"B 해석\"}\n    ],\n    \"tip\": \"뉘앙스 차이, 주의할 점, 또는 유사 표현을 꿀팁처럼 알려주세요 (해요체, 이모지 활용)\",\n    \"quiz\": {\"question\": \"간단하고 재미있는 퀴즈 문제\", \"answer\": \"정답\"}\n  },\n  \"tags\": [\"카테고리1\", \"카테고리2\"]\n}\n\n입력 데이터: {{ $json.body }}",
-            "options": {}
-          },
-          "id": "d1a1b1c1-d1e1-41f1-b1g1-h1i1j1k1l1m1",
-          "name": "Gemini AI",
-          "type": "n8n-nodes-base.googleGemini",
-          "typeVersion": 1,
-          "position": [900, 300],
-          "credentials": {
-            "googleGeminiApi": {
-              "id": "your-credential-id",
-              "name": "Google Gemini API Key"
-            }
-          }
-        },
+    {
+      "parameters": {
+        "model": "gemini-1.5-flash",
+        "prompt": "당신은 10대와 20대 학생들을 가르치는 아주 친절하고 유머러스한 영어 강사예요. 🌟\n제공된 블로그 본문에서 가장 핵심적인 영어 표현 하나를 뽑아서 우리만의 블로그 양식에 맞춰 재구성해줄게요!\n\n말투는 무조건 '~해요', '~예요' 체를 사용하고, 학생들의 흥미를 끌 수 있도록 적절한 이모지를 팍팍 섞어주세요. 😎\n\n결과는 반드시 아래의 JSON 형식으로만 답변하세요:\n{\n  \"expression\": \"영어 표현 (예: I'm all ears)\",\n  \"meaning\": \"직관적인 한국어 뜻 (예: 잘 듣고 있어)\",\n  \"content\": {\n    \"situation\": \"이 표현이 쓰이는 구체적인 상황이나 감정을 아주 친근하고 재미있게 묘사해주세요 (해요체, 이모지 활용)\",\n    \"dialogue\": [\n      {\"en\": \"영어 대화문 A\", \"kr\": \"A 해석\"},\n      {\"en\": \"영어 대화문 B\", \"kr\": \"B 해석\"}\n    ],\n    \"tip\": \"뉘앙스 차이, 주의할 점, 또는 유사 표현을 꿀팁처럼 알려주세요 (해요체, 이모지 활용)\",\n    \"quiz\": {\"question\": \"간단하고 재미있는 퀴즈 문제\", \"answer\": \"정답\"}\n  },\n  \"tags\": [\"daily\", \"health\"]\n}\n\n입력 데이터: {{ $json.body }}",
+        "options": {}
+      },
+      "id": "d1a1b1c1-d1e1-41f1-b1g1-h1i1j1k1l1m1",
+      "name": "Gemini AI",
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": {
+        "googleGeminiApi": {
+          "id": "your-credential-id",
+          "name": "Google Gemini API Key"
+        }
+      }
+    },
     {
       "parameters": {
         "operation": "insert",

@@ -125,7 +125,7 @@ export default async function ExpressionDetailPage({ params }: PageProps) {
           </section>
 
           {/* Quiz Card */}
-          <section className="rounded-3xl border border-zinc-200 bg-gradient-to-br from-zinc-900 to-zinc-800 p-8 text-white shadow-lg dark:border-zinc-700">
+          <section className="rounded-3xl border border-zinc-200 bg-linear-to-br from-zinc-900 to-zinc-800 p-8 text-white shadow-lg dark:border-zinc-700">
             <h2 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-zinc-400">
               <span className="text-lg">🔥</span> 오늘의 미션!
             </h2>
