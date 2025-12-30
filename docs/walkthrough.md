@@ -2,6 +2,21 @@
 
 > 각 버전별 구현 내용과 변경 사항을 상세히 기록합니다. 최신 버전이 상단에 옵니다.
 
+## v0.1.1: Supabase 클라이언트 및 환경 설정 (2025-12-30)
+
+### 1. 의존성 설치
+
+- `@supabase/ssr`, `@supabase/supabase-js` 패키지 설치.
+
+### 2. Supabase 클라이언트 유틸리티 구현
+
+- **`lib/supabase/client.ts`**: 브라우저 환경용 클라이언트 설정.
+- **`lib/supabase/server.ts`**: 서버 컴포넌트 및 SSR용 클라이언트 설정 (Next.js 16+ `cookies()` 비동기 대응).
+
+### 3. 환경 변수 템플릿 생성
+
+- **`.env.local`**: 프로젝트 URL 및 Anon Key 설정을 위한 템플릿 파일 추가.
+
 ## v0.1.0: 프로젝트 스캐폴딩 및 설계 (2025-12-30)
 
 ### 1. Next.js 프로젝트 생성

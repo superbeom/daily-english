@@ -8,8 +8,8 @@
 - [x] 문서화 체계 수립 (Context, History, Walkthrough, Git Docs)
 - [x] Supabase 데이터베이스 스키마 설계
 - [x] n8n 워크플로우 가이드 작성
-- [ ] Supabase 클라이언트 설정 (`@supabase/ssr`)
-- [ ] 환경 변수(`.env.local`) 템플릿 생성
+- [x] Supabase 클라이언트 설정 (`@supabase/ssr`)
+- [x] 환경 변수(`.env.local`) 템플릿 생성
 
 ## Phase 2: Core Feature (핵심 기능)
 
