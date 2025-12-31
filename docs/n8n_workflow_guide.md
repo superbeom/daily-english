@@ -80,10 +80,21 @@ n8n의 `Supabase` 노드를 사용하여 최종 데이터를 `expressions` 테�
 
 ---
 
+## 💾 백업 및 복구 (Backup & Recovery)
+
+워크플로우 데이터 유실에 대비하여 주기적으로 설정을 내보내기 하는 것이 좋습니다.
+
+1. **내보내기 (Export)**: 워크플로우 화면 상단 메뉴 -> **Download** 클릭.
+2. **공유용 저장**: API Key가 제거된 템플릿은 `docs/n8n_workflow_template.json`에 저장하여 공유합니다.
+3. **개인 백업 저장**: 본인의 실제 Credential 정보가 포함된 전체 백업은 **`n8n_data/n8n_workflow_daily_english.json`** 경로에 저장하는 것을 권장합니다. (해당 폴더는 `.gitignore` 처리되어 있어 보안상 안전합니다.)
+4. **가져오기 (Import)**: 새로운 n8n 환경에서 **Import from File** 클릭 -> 저장된 JSON 파일 선택.
+5. **재연동**: 가져오기 후 Gemini API Key 및 Supabase Credential을 다시 연결하면 즉시 가동 가능합니다.
+
 ## 💡 팁 (Troubleshooting)
 
 - **Duplicate Check**: DB에 이미 존재하는 표현이 생성될 경우, `If New` 노드에 의해 자동으로 필터링되고 다음 실행을 기약합니다.
 - **Category Management**: `Code` 노드 내의 카테고리 배열을 주기적으로 업데이트하면 콘텐츠의 다양성을 유지할 수 있습니다.
+- **Credential Missing Error**: 템플릿 JSON 파일에는 보안을 위해 실제 API Key가 포함되어 있지 않습니다. 가져오기 직후 `Google Gemini Chat Model`, `Check Duplicate`, `Supabase Insert` 노드가 주황색으로 표시될 수 있습니다. 각 노드를 열어 본인의 **Gemini API** 및 **Supabase** Credential을 새로 생성하거나 선택해 주어야 합니다.
 - **Import Error**: "Could not find property option" 에러가 발생할 경우, 최신 n8n 버전을 사용 중인지 확인하거나 템플릿의 `options: {}` 필드를 제거해보세요 (현재 템플릿은 최적화되어 있습니다).
 - **JSON Parsing Error**: 워크플로우 템플릿의 `prompt` 필드는 줄바꿈(`\n`)과 따옴표(`\"`)가 이스케이프 처리된 단일 문자열이어야 합니다. 수정 시 JSON 문법이 깨지지 않도록 주의하세요.
 - **Quota**: Gemini 2.5 Flash 무료 티어를 효율적으로 사용하기 위해, 중복된 표현은 Generator 단계를 건너뛰도록 설계되었습니다.
