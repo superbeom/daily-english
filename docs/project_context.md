@@ -53,7 +53,7 @@ daily-english/
 │   ├── supabase/        # Supabase 클라이언트 설정 (server/client)
 │   └── utils.ts         # 공통 유틸리티 함수
 ├── types/               # TypeScript 타입 정의
-│   └── database.types.ts # Supabase Generated Types
+│   └── database.ts      # Supabase Generated Types
 ├── docs/                # 프로젝트 문서의 중앙 저장소 (Docs as Code)
 │   ├── project_context.md   # 전체 프로젝트의 규칙, 아키텍처, 상태 정의 (Single Source of Truth)
 │   ├── project_history.md   # 주요 의사결정 이력 및 Q&A 로그
