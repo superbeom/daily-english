@@ -59,8 +59,11 @@ daily-english/
 │   ├── task.md              # 작업 목록 및 진행 상태 관리
 │   ├── future_todos.md      # 기술 부채, 아이디어, 개선 사항 백로그
 │   ├── walkthrough.md       # 버전별 기능 구현 상세 및 검증 내역
-│   ├── database_schema.md   # DB 스키마 정의
-│   ├── n8n_workflow_guide.md # n8n 자동화 설정 가이드
+    ├── database_schema.md   # DB 스키마 정의
+    ├── monetization_brainstorming.md # 수익화 브레인스토밍 및 Q&A (원본)
+    ├── monetization_ideas.md # 수익화 및 성장 전략 아이디어 요약
+    ├── monetization_strategy.md # 수익화 및 성장 전략 구현 로드맵
+    ├── n8n_workflow_guide.md # n8n 자동화 설정 가이드
 │   ├── agent_workflows.md   # AI 에이전트 워크플로우 가이드
 │   ├── supabase_strategy.md # Supabase 다중 프로젝트 관리 전략
 │   ├── git_convention.md    # 커밋 메시지 작성 규칙
@@ -113,3 +116,13 @@ daily-english/
 
 - **Gemini Free Tier**: 분당 15회 요청 제한이 있으므로, n8n 루프 실행 시 `Wait` 노드를 통해 속도를 조절해야 함.
 - **Supabase Free Tier**: 데이터베이스 용량(500MB)을 고려하여 불필요한 로그 데이터는 주기적으로 정리 필요.
+
+## 8. 수익화 전략 (Monetization Strategy)
+
+- **핵심 모델**: Freemium + Monthly Subscription (PayPal, $9.99/mo).
+- **데이터 전략**: Hybrid Storage (Free: LocalStorage / Pro: Supabase DB).
+- **전환 트리거**: 데이터의 영구 보존 및 멀티 디바이스 연동 욕구 자극.
+- **참고 문서**:
+  - `docs/monetization_brainstorming.md` (수익화 Q&A 원본)
+  - `docs/monetization_ideas.md` (전략 및 아이디어 요약)
+  - `docs/monetization_strategy.md` (구현 로드맵)
