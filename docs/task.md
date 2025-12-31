@@ -22,11 +22,12 @@
 - [x] n8n 로컬/클라우드 세팅
 - [x] Gemini API 연동 및 프롬프트 테스트
 - [x] 실제 데이터 파이프라인 가동 테스트
+- [x] AI 프롬프트 고도화 및 페르소나 일관성 확보
+- [x] JSON 파싱 및 중복 체크 로직 안정화
 
 ## Phase 4: Optimization & Polish (최적화 및 고도화)
 
-- [ ] **Automation**: n8n 스케줄 트리거(Schedule Trigger) 활성화 (매일 9시)
-- [ ] **Automation**: 데이터 중복 방지(Duplicate Check) 로직 추가
+- [x] **Automation**: AI 기반 생성 및 중복 방지 워크플로우 설계 완료 (`docs/n8n_optimization_steps.md`)
 - [ ] **UI/UX**: 태그별 필터링 기능 구현
 - [ ] **UI/UX**: 표현 검색(Search) 기능 구현
 - [ ] **UI/UX**: Framer Motion을 활용한 리스트 애니메이션 적용

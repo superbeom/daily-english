@@ -2,6 +2,29 @@
 
 > 각 버전별 구현 내용과 변경 사항을 상세히 기록합니다. 최신 버전이 상단에 옵니다.
 
+## v0.4.2: AI 프롬프트 고도화 및 파이프라인 최적화 (2025-12-31)
+
+### 1. 프롬프트 페르소나 일관성 강화
+
+- **Prompt Engineering**: Gemini Content Generator 프롬프트에 실서비스 데이터 예시 3종을 추가하여 스타일 학습 유도.
+- **Constraint**: 특정 집단(학생 등)을 지칭하는 호칭 사용 금지 및 2030 타겟의 세련된 톤 앤 매너 적용.
+
+### 2. JSON 파싱 로직 추가
+
+- **`Parse JSON` Node**: Gemini의 마크다운 코드 블록(` ```json `)이 포함된 응답을 순수 JSON 객체로 변환하는 JavaScript 로직 구현.
+- **Error Handling**: 파싱 실패 시 원본 데이터를 로깅하도록 예외 처리.
+
+### 3. n8n 백업 체계 수립
+
+- **`docs/n8n_workflow_guide.md`**: 워크플로우 Export/Import 가이드 추가.
+
+## v0.4.1: n8n 데이터 지속성 설정 개선 (2025-12-31)
+
+### 1. Docker Volume -> Bind Mount 변경
+
+- **`docker-compose.yml`**: 데이터 초기화 문제 해결을 위해 n8n 데이터 저장 경로를 Docker Volume에서 로컬 디렉토리 바인딩(`user -> ./n8n_data:/home/node/.n8n`)으로 변경.
+- **`.gitignore`**: 로컬 DB 파일이 커밋되지 않도록 `n8n_data/` 추가.
+
 ## v0.4.0: 자동화 파이프라인 구축 (2025-12-30)
 
 ### 1. n8n 로컬 환경 설정
