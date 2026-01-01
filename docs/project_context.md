@@ -81,9 +81,13 @@ daily-english/
 
 ### Naming Conventions
 
-- **Components (`components/`)**: `PascalCase` (예: `ExpressionCard.tsx`)
-- **Utilities & Logic (`lib/`)**: `kebab-case` (예: `ui-config.ts`, `expressions.ts`)
-- **Pages (`app/`)**: Next.js App Router 규칙 준수 (`page.tsx`, `layout.tsx` 등)
+- **File Names**:
+  - **Components (`components/`)**: `PascalCase` (예: `ExpressionCard.tsx`)
+  - **Utilities & Logic (`lib/`)**: `kebab-case` (예: `ui-config.ts`, `expressions.ts`)
+  - **Pages (`app/`)**: Next.js App Router 규칙 준수 (`page.tsx`, `layout.tsx` 등)
+- **Export Style**:
+  - **Components**: `export default function ComponentName` (Default Export)
+  - **Utilities**: `export const functionName` (Named Export)
 
 ### Component Architecture
 

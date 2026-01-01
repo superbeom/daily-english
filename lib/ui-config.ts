@@ -81,7 +81,7 @@ export const getCategoryConfig = (category: string) => {
     default:
       return {
         icon: Coffee,
-        textStyles: "text-zinc-400 dark:text-zinc-500",
+        textStyles: "text-amber-700 dark:text-amber-500",
       };
   }
 };
