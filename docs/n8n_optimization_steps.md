@@ -83,7 +83,7 @@
     };
     ```
 
-### 2단계: Gemini Expression Generator 설정 (표현 생성)
+### 3단계: Gemini Expression Generator 설정 (표현 생성)
 
 `Pick Category` 노드 뒤에 **Google Gemini Chat Model** 노드를 연결합니다.
 
@@ -99,16 +99,24 @@
 
   Requirements:
   1. The expression must be practical and widely used.
-  2. Output MUST be a clean JSON object.
+  2. Capitalization for 'expression':
+     - Start with an UPPERCASE letter for standalone sentences (e.g., "Don't take it personally", "No cap").
+     - Start with a lowercase letter for general phrases or idioms (e.g., "spill the tea", "hit the road").
+  3. Punctuation for 'expression': Do NOT include trailing periods (.) or commas (,). Exclamation marks (!) and question marks (?) are allowed.
+  4. For the 'meaning' field:
+     - Provide a concise definition in a casual tone (반말).
+     - If there are multiple meanings, separate them with ' · ' (middle dot).
+     - Do NOT end with a period (.).
+  5. Output MUST be a clean JSON object.
 
   Output Format (JSON):
   {
     "expression": "Hold your horses",
-    "meaning": "잠깐 기다리세요 / 진정하세요"
+    "meaning": "잠깐 기다려 · 진정해"
   }
   ```
 
-### 3단계: Parse Expression JSON
+### 4단계: Parse Expression JSON
 
 Gemini가 생성한 표현 데이터가 문자열 형태(Markdown Code Block 등)로 반환될 수 있으므로, 이를 순수 JSON 객체로 변환하는 과정이 반드시 필요합니다.
 
@@ -140,7 +148,7 @@ Gemini가 생성한 표현 데이터가 문자열 형태(Markdown Code Block 등
   }
   ````
 
-### 4단계: Supabase 중복 체크 노드 추가
+### 5단계: Supabase 중복 체크 노드 추가
 
 `Parse Expression JSON` 노드 뒤에 **Supabase** 노드를 추가합니다.
 
@@ -154,7 +162,7 @@ Gemini가 생성한 표현 데이터가 문자열 형태(Markdown Code Block 등
   - **Operator**: `Equal`
   - **Value**: `{{ $('Parse Expression JSON').item.json.expression }}`
 
-### 5단계: If 노드 추가 (조건 분기)
+### 6단계: If 노드 추가 (조건 분기)
 
 `Check Duplicate` 뒤에 **If** 노드를 추가합니다.
 
@@ -163,7 +171,7 @@ Gemini가 생성한 표현 데이터가 문자열 형태(Markdown Code Block 등
   - Number: `{{ $items('Check Duplicate').length }}` **Equal** `0`
   - (데이터가 없으면 0이므로 새로운 표현임)
 
-### 6단계: Gemini Content Generator 설정 (상세 내용 생성)
+### 7단계: Gemini Content Generator 설정 (상세 내용 생성)
 
 `If New` 노드의 **True** (위쪽) 출력에 새로운 **Google Gemini Chat Model** 노드를 연결합니다.
 
@@ -179,16 +187,23 @@ Gemini가 생성한 표현 데이터가 문자열 형태(Markdown Code Block 등
   Category: {{ $('Pick Category').item.json.category }}
 
   Requirements:
-  1. Tone: Friendly, humorous, and engaging (target audience: 20-30s), BUT **MUST use polite language (존댓말/Desu-Masu form) consistently**.
-  2. Constraint:
-     - **NEVER use casual speech (반말)** in the explanation, tips, or situation description.
+  1. Tone: Friendly, humorous, and engaging (target audience: 20-30s), BUT **MUST use polite language (존댓말/Desu-Masu form) consistently** for explanations.
+  2. For the 'meaning' field in ALL languages:
+     - Provide concise definitions in a casual tone (e.g., Korean: 반말).
+     - If there are multiple meanings, separate them with ' · ' (middle dot).
+     - Do NOT end with a period (.).
+  3. Formatting for 'expression':
+     - Capitalization: Start with an UPPERCASE letter for standalone sentences (e.g., "Don't take it personally", "No cap"). Start with a lowercase letter for general phrases or idioms (e.g., "spill the tea", "hit the road").
+     - Punctuation: Do NOT include trailing periods (.) or commas (,). Exclamation marks (!) and question marks (?) are allowed.
+  4. Constraint for content:
+     - **NEVER use casual speech (반말)** in the explanation, tips, or situation description (except for the 'meaning' field and dialogue).
      - Do NOT mix polite and casual styles. Keep the tone consistent throughout.
      - Do NOT address the reader as specific groups like "Kids" or "Students". Use a general, relatable tone suitable for young adults.
-  3. Output MUST be a valid JSON object matching the schema below.
-  4. 'meaning' and 'content' fields must contain keys for 'ko', 'ja', 'es'.
-  5. In the dialogue section, use the key 'translation' for the translated sentence.
-  6. **Consistency**: Use the 'Example (Korean)' below as a reference for the depth, humor, and style. Apply the same quality to Japanese and Spanish.
-  7. **Fixed Fields**: Include the 'domain' and 'category' exactly as provided in the input.
+  5. Output MUST be a valid JSON object matching the schema below.
+  6. 'meaning' and 'content' fields must contain keys for 'ko', 'ja', 'es'.
+  7. In the dialogue section, use the key 'translation' for the translated sentence.
+  8. **Consistency**: Use the 'Example (Korean)' below as a reference for the depth, humor, and style. Apply the same quality to Japanese and Spanish.
+  9. **Fixed Fields**: Include the 'domain' and 'category' exactly as provided in the input.
 
   Example Output (Reference this style for ALL languages):
   {
@@ -196,9 +211,9 @@ Gemini가 생성한 표현 데이터가 문자열 형태(Markdown Code Block 등
     "domain": "conversation",
     "category": "daily",
     "meaning": {
-      "ko": "몸이 좀 안 좋아",
-      "ja": "体調が少し悪い",
-      "es": "sentirse un poco mal"
+      "ko": "몸이 좀 안 좋아 · 컨디션이 별로야",
+      "ja": "体調が少し悪い · 気分がすぐれない",
+      "es": "sentirse un poco mal · no estar al cien"
     },
     "content": {
       "ko": {
@@ -236,7 +251,7 @@ Gemini가 생성한 표현 데이터가 문자열 형태(Markdown Code Block 등
   }
   ```
 
-### 7단계: JSON Parsing (문자열 -> JSON 변환)
+### 8단계: Parse Content JSON
 
 Gemini가 JSON을 문자열(`text`)로 반환할 경우를 대비하여 **Code** 노드를 추가합니다.
 `Gemini Content Generator`와 `Supabase Insert` 사이에 연결하세요.
@@ -267,7 +282,7 @@ Gemini가 JSON을 문자열(`text`)로 반환할 경우를 대비하여 **Code**
   }
   ````
 
-### 8단계: Supabase Insert 설정
+### 9단계: Supabase Insert 설정
 
 `Parse JSON` 노드 뒤에 **Supabase** 노드를 연결하여 최종 데이터를 저장합니다.
 
