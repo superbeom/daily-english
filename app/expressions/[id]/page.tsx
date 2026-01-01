@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getI18n } from "@/lib/i18n/server";
 import { getExpressionById } from "@/lib/expressions";
 import { getExpressionUIConfig } from "@/lib/ui-config";
+import CategoryLabel from "@/components/CategoryLabel";
+import Tag from "@/components/Tag";
 
 interface PageProps {
   params: Promise<{
@@ -68,12 +70,13 @@ export default async function ExpressionDetailPage({ params }: PageProps) {
                   {domain.label}
                 </span>
                 {/* Category Label */}
-                <span
-                  className={`flex items-center gap-1.5 text-xs font-black uppercase tracking-wider ${category.textStyles}`}
-                >
-                  <category.icon className="w-4 h-4" />
-                  {expression.category}
-                </span>
+                <CategoryLabel
+                  label={expression.category}
+                  icon={category.icon}
+                  textStyles={category.textStyles}
+                  href={`/?category=${expression.category}`}
+                  className="text-xs"
+                />
               </div>
 
               <h1 className="mb-4 text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-6xl">
@@ -87,7 +90,6 @@ export default async function ExpressionDetailPage({ params }: PageProps) {
                 {/* Situation */}
                 <div className="rounded-2xl bg-zinc-50 p-6 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
                   <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-zinc-400">
-                    <span className="text-lg">💡</span>{" "}
                     {dict.detail.situationTitle}
                   </h2>
                   <p className="text-xl leading-relaxed text-zinc-800 dark:text-zinc-200 break-keep">
@@ -98,7 +100,6 @@ export default async function ExpressionDetailPage({ params }: PageProps) {
                 {/* Dialogue */}
                 <div>
                   <h2 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-zinc-400">
-                    <span className="text-lg">💬</span>{" "}
                     {dict.detail.dialogueTitle}
                   </h2>
                   <div className="space-y-4">
@@ -133,7 +134,7 @@ export default async function ExpressionDetailPage({ params }: PageProps) {
                 {/* Tip */}
                 <div className="rounded-2xl border-2 border-dashed border-blue-100 bg-blue-50/30 p-6 dark:border-blue-900/30 dark:bg-blue-900/10">
                   <h2 className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-blue-600 dark:text-blue-400">
-                    <span className="text-lg">🍯</span> {dict.detail.tipTitle}
+                    {dict.detail.tipTitle}
                   </h2>
                   <p className="text-lg text-zinc-700 dark:text-zinc-300 break-keep">
                     {content?.tip}
@@ -146,7 +147,7 @@ export default async function ExpressionDetailPage({ params }: PageProps) {
           {/* Quiz Card */}
           <section className="rounded-3xl border border-zinc-200 bg-linear-to-br from-zinc-900 to-zinc-800 p-8 text-white shadow-lg dark:border-zinc-700">
             <h2 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-zinc-400">
-              <span className="text-lg">🔥</span> {dict.detail.missionTitle}
+              {dict.detail.missionTitle}
             </h2>
             <p className="text-2xl font-bold mb-6">{content?.quiz.question}</p>
             <details className="group cursor-pointer">
@@ -163,12 +164,10 @@ export default async function ExpressionDetailPage({ params }: PageProps) {
           </section>
 
           {/* Tags & Source */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 pb-4">
             <div className="flex flex-wrap gap-2">
               {expression.tags?.map((tag) => (
-                <span key={tag} className="text-sm font-medium text-zinc-400">
-                  #{tag}
-                </span>
+                <Tag key={tag} label={tag} href={`/?tag=${tag}`} />
               ))}
             </div>
           </div>

@@ -1,12 +1,25 @@
+import { Suspense } from "react";
 import { getI18n } from "@/lib/i18n/server";
 import { getExpressions } from "@/lib/expressions";
-import { ExpressionCard } from "@/components/ExpressionCard";
+import ExpressionCard from "@/components/ExpressionCard";
+import FilterBar from "@/components/FilterBar";
 
 // Revalidate every hour
 export const revalidate = 3600;
 
-export default async function Home() {
-  const expressions = await getExpressions();
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function Home({ searchParams }: PageProps) {
+  const params = await searchParams;
+
+  const category =
+    typeof params.category === "string" ? params.category : undefined;
+  const search = typeof params.search === "string" ? params.search : undefined;
+  const tag = typeof params.tag === "string" ? params.tag : undefined;
+
+  const expressions = await getExpressions({ category, search, tag });
   const { locale, dict } = await getI18n();
 
   return (
@@ -29,7 +42,7 @@ export default async function Home() {
 
       {/* Main Content */}
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8">
+        <div className="mb-10">
           <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
             {dict.home.title}
           </h2>
@@ -38,9 +51,25 @@ export default async function Home() {
           </p>
         </div>
 
+        {/* Filter & Search Bar */}
+        <Suspense
+          fallback={
+            <div className="h-20 bg-zinc-100 animate-pulse rounded-2xl mb-10" />
+          }
+        >
+          <FilterBar locale={locale} />
+        </Suspense>
+
         {expressions.length === 0 ? (
-          <div className="flex h-64 items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800">
-            <p className="text-zinc-500">{dict.home.emptyState}</p>
+          <div className="flex h-64 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-zinc-200 dark:border-zinc-800">
+            <p className="text-zinc-500 text-lg font-medium">
+              {dict.home.emptyState}
+            </p>
+            {(category || search || tag) && (
+              <p className="text-zinc-400 text-sm mt-2">
+                Try adjusting your filters or search query.
+              </p>
+            )}
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

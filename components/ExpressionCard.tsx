@@ -1,15 +1,23 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Expression } from "@/types/database";
 import { getDictionary } from "@/lib/i18n";
 import { getExpressionUIConfig } from "@/lib/ui-config";
+import CategoryLabel from "@/components/CategoryLabel";
+import Tag from "@/components/Tag";
 
 interface ExpressionCardProps {
   item: Expression;
   locale: string;
 }
 
-export function ExpressionCard({ item, locale }: ExpressionCardProps) {
+export default function ExpressionCard({ item, locale }: ExpressionCardProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const dict = getDictionary(locale);
+
   const content = item.content[locale] || item.content["ko"];
   const meaning = item.meaning[locale] || item.meaning["ko"];
 
@@ -19,37 +27,60 @@ export function ExpressionCard({ item, locale }: ExpressionCardProps) {
     item.category
   );
 
+  const handleTagClick = (e: React.MouseEvent, tag: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tag", tag);
+    params.delete("search"); // 태그 클릭 시 일반 검색어는 제거
+
+    router.push(`/?${params.toString()}`);
+  };
+
+  const handleCategoryClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("category", item.category);
+    params.delete("search");
+    params.delete("tag");
+
+    router.push(`/?${params.toString()}`);
+  };
+
   return (
     <Link href={`/expressions/${item.id}`} className="block h-full">
-      <div className="group h-full overflow-hidden rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="mb-4">
-          <div className="mb-3 flex items-center justify-between">
+      <div className="group h-full overflow-hidden rounded-3xl border border-zinc-200 bg-white p-7 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-blue-200/50 hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-blue-500/30 dark:hover:shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)]">
+        <div className="mb-5">
+          <div className="mb-4 flex items-center justify-between">
             {/* Domain Tag */}
             <span
-              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${domain.styles}`}
+              className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${domain.styles}`}
             >
-              <domain.icon className="w-3 h-3 mr-1.5" />
+              <domain.icon className="w-3.5 h-3.5 mr-2 transition-transform duration-300 group-hover:scale-110" />
               {domain.label}
             </span>
             {/* Category Label with Icon */}
-            <span
-              className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider ${category.textStyles}`}
-            >
-              <category.icon className="w-3 h-3" />
-              {item.category}
-            </span>
+            <CategoryLabel
+              label={item.category}
+              icon={category.icon}
+              textStyles={category.textStyles}
+              onClick={handleCategoryClick}
+            />
           </div>
-          <h3 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 leading-tight">
+          <h3 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {item.expression}
           </h3>
-          <p className="mt-1.5 text-lg font-medium text-blue-600 dark:text-blue-400">
+          <p className="mt-2 text-lg font-medium text-zinc-600 dark:text-zinc-400">
             {meaning}
           </p>
         </div>
 
-        <div className="space-y-3 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+        <div className="space-y-3 border-t border-zinc-100 pt-5 dark:border-zinc-800">
           <div>
-            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">
               {dict.card.situationQuestion}
             </p>
             <p className="text-zinc-800 dark:text-zinc-200 leading-relaxed line-clamp-2 text-sm">
@@ -59,14 +90,13 @@ export function ExpressionCard({ item, locale }: ExpressionCardProps) {
         </div>
 
         {item.tags && item.tags.length > 0 && (
-          <div className="mt-5 flex flex-wrap gap-1.5">
+          <div className="mt-6 flex flex-wrap gap-2">
             {item.tags.map((tag) => (
-              <span
+              <Tag
                 key={tag}
-                className="rounded-md bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-500 dark:bg-zinc-800/50 dark:text-zinc-400 border border-zinc-100 dark:border-zinc-800"
-              >
-                #{tag}
-              </span>
+                label={tag}
+                onClick={(e) => handleTagClick(e, tag)}
+              />
             ))}
           </div>
         )}

@@ -59,6 +59,7 @@ daily-english/
 │   ├── project_history.md   # 주요 의사결정 이력 및 Q&A 로그
 │   ├── task.md              # 작업 목록 및 진행 상태 관리
 │   ├── future_todos.md      # 기술 부채, 아이디어, 개선 사항 백로그
+│   ├── feature_ideas.md     # 추가 기능 아이디어 및 브레인스토밍
 │   ├── walkthrough.md       # 버전별 기능 구현 상세 및 검증 내역
     ├── database_schema.md   # DB 스키마 정의
     ├── monetization_brainstorming.md # 수익화 브레인스토밍 및 Q&A (원본)
@@ -81,9 +82,13 @@ daily-english/
 
 ### Naming Conventions
 
-- **Components (`components/`)**: `PascalCase` (예: `ExpressionCard.tsx`)
-- **Utilities & Logic (`lib/`)**: `kebab-case` (예: `ui-config.ts`, `expressions.ts`)
-- **Pages (`app/`)**: Next.js App Router 규칙 준수 (`page.tsx`, `layout.tsx` 등)
+- **File Names**:
+  - **Components (`components/`)**: `PascalCase` (예: `ExpressionCard.tsx`)
+  - **Utilities & Logic (`lib/`)**: `kebab-case` (예: `ui-config.ts`, `expressions.ts`)
+  - **Pages (`app/`)**: Next.js App Router 규칙 준수 (`page.tsx`, `layout.tsx` 등)
+- **Export Style**:
+  - **Components**: `export default function ComponentName` (Default Export)
+  - **Utilities**: `export const functionName` (Named Export)
 
 ### Component Architecture
 
