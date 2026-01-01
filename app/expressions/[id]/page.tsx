@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getI18n } from "@/lib/i18n/server";
 import { getExpressionById } from "@/lib/expressions";
 import { getExpressionUIConfig } from "@/lib/ui-config";
+import CategoryLabel from "@/components/CategoryLabel";
 import Tag from "@/components/Tag";
 
 interface PageProps {
@@ -69,12 +70,13 @@ export default async function ExpressionDetailPage({ params }: PageProps) {
                   {domain.label}
                 </span>
                 {/* Category Label */}
-                <span
-                  className={`flex items-center gap-1.5 text-xs font-black uppercase tracking-wider ${category.textStyles}`}
-                >
-                  <category.icon className="w-4 h-4" />
-                  {expression.category}
-                </span>
+                <CategoryLabel
+                  label={expression.category}
+                  icon={category.icon}
+                  textStyles={category.textStyles}
+                  href={`/?category=${expression.category}`}
+                  className="text-xs"
+                />
               </div>
 
               <h1 className="mb-4 text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-6xl">
