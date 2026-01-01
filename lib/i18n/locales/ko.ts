@@ -11,7 +11,6 @@ export const ko = {
     emptyState: "표현을 찾을 수 없습니다. 나중에 다시 와주세요!",
   },
   detail: {
-    todayExpression: "Today's expression",
     situationTitle: "💡 어떤 상황인가요?",
     dialogueTitle: "💬 실전 대화로 배워봐요!",
     tipTitle: "🍯 선생님의 꿀팁!",

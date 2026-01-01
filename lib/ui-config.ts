@@ -85,3 +85,23 @@ export const getCategoryConfig = (category: string) => {
       };
   }
 };
+
+/**
+ * 도메인과 카테고리 설정을 통합하여 반환하는 헬퍼 함수
+ */
+export const getExpressionUIConfig = (domain: string, category: string) => {
+  const domainConfig = getDomainConfig(domain);
+  const categoryConfig = getCategoryConfig(category);
+
+  return {
+    domain: {
+      label: domain, // 도메인 텍스트는 원본 사용 (필요시 label 사용)
+      styles: domainConfig.styles,
+      icon: domainConfig.icon,
+    },
+    category: {
+      textStyles: categoryConfig.textStyles,
+      icon: categoryConfig.icon,
+    },
+  };
+};

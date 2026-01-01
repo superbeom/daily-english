@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Expression } from "@/types/database";
 import { getDictionary } from "@/lib/i18n";
-import { getDomainConfig, getCategoryConfig } from "@/lib/ui-config";
+import { getExpressionUIConfig } from "@/lib/ui-config";
 
 interface ExpressionCardProps {
   item: Expression;
@@ -13,12 +13,11 @@ export function ExpressionCard({ item, locale }: ExpressionCardProps) {
   const content = item.content[locale] || item.content["ko"];
   const meaning = item.meaning[locale] || item.meaning["ko"];
 
-  // UI Config 가져오기
-  const domainConfig = getDomainConfig(item.domain);
-  const categoryConfig = getCategoryConfig(item.category);
-
-  const DomainIcon = domainConfig.icon;
-  const CategoryIcon = categoryConfig.icon;
+  // UI Config 통합 가져오기
+  const { domain, category } = getExpressionUIConfig(
+    item.domain,
+    item.category
+  );
 
   return (
     <Link href={`/expressions/${item.id}`} className="block h-full">
@@ -27,16 +26,16 @@ export function ExpressionCard({ item, locale }: ExpressionCardProps) {
           <div className="mb-3 flex items-center justify-between">
             {/* Domain Tag */}
             <span
-              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${domainConfig.styles}`}
+              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${domain.styles}`}
             >
-              <DomainIcon className="w-3 h-3 mr-1.5" />
-              {item.domain}
+              <domain.icon className="w-3 h-3 mr-1.5" />
+              {domain.label}
             </span>
             {/* Category Label with Icon */}
             <span
-              className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider ${categoryConfig.textStyles}`}
+              className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider ${category.textStyles}`}
             >
-              <CategoryIcon className="w-3 h-3" />
+              <category.icon className="w-3 h-3" />
               {item.category}
             </span>
           </div>

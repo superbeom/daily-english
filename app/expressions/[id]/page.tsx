@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getI18n } from "@/lib/i18n/server";
-import { formatDate } from "@/lib/i18n/format";
 import { getExpressionById } from "@/lib/expressions";
+import { getExpressionUIConfig } from "@/lib/ui-config";
 
 interface PageProps {
   params: Promise<{
@@ -30,6 +30,12 @@ export default async function ExpressionDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  // UI Config 통합 가져오기
+  const { domain, category } = getExpressionUIConfig(
+    expression.domain,
+    expression.category
+  );
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black pb-20">
       <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
@@ -54,12 +60,20 @@ export default async function ExpressionDetailPage({ params }: PageProps) {
           <section className="overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
             <div className="p-8 sm:p-12">
               <div className="mb-8 flex items-center justify-between">
-                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                  {dict.detail.todayExpression}
+                {/* Domain Tag */}
+                <span
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${domain.styles}`}
+                >
+                  <domain.icon className="w-3 h-3 mr-1.5" />
+                  {domain.label}
                 </span>
-                <time className="text-sm font-medium text-zinc-400">
-                  {formatDate(expression.published_at, locale)}
-                </time>
+                {/* Category Label */}
+                <span
+                  className={`flex items-center gap-1.5 text-xs font-black uppercase tracking-wider ${category.textStyles}`}
+                >
+                  <category.icon className="w-4 h-4" />
+                  {expression.category}
+                </span>
               </div>
 
               <h1 className="mb-4 text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-6xl">

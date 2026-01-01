@@ -11,7 +11,6 @@ export const en = {
     emptyState: "No expressions found. Come back later!",
   },
   detail: {
-    todayExpression: "Today's expression",
     situationTitle: "💡 What's the situation?",
     dialogueTitle: "💬 Learn with dialogue!",
     tipTitle: "🍯 Teacher's Tip!",
