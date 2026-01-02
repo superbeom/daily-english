@@ -153,14 +153,17 @@ Gemini가 생성한 표현 데이터가 문자열 형태(Markdown Code Block 등
 `Parse Expression JSON` 노드 뒤에 **Supabase** 노드를 추가합니다.
 
 - **Name**: `Check Duplicate`
-- **Operation**: `Get All`
-- **Table**: `expressions`
+- **Schema**: `speak_mango_en`
+- **Operation**: `Get Many`
+- **Table Name or ID**: `expressions`
 - **Return All**: `True`
-- **Limit**: `1`
 - **Filters**:
-  - **Column**: `expression`
-  - **Operator**: `Equal`
-  - **Value**: `{{ $('Parse Expression JSON').item.json.expression }}`
+  - **Filter**: `Build Manually`
+  - **Must Match**: `Any Filter`
+  - **Field Name or ID**: `expression - (string)`
+  - **Condition**: `ILIKE operator`
+  - **Field Value**: `*{{ $('Parse Expression JSON').item.json.expression }}*`
+  - _(참고: 'Equal' 대신 'Like'를 사용하여 "touch base"가 생성될 때 기존의 "Let's touch base"도 중복으로 감지하도록 함)_
 
 ### 6단계: If 노드 추가 (조건 분기)
 

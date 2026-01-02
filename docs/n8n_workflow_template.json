@@ -95,8 +95,8 @@
           "conditions": [
             {
               "keyName": "expression",
-              "condition": "eq",
-              "keyValue": "={{ $('Parse Expression JSON').item.json.expression }}"
+              "condition": "ilike",
+              "keyValue": "=*{{ $('Parse Expression JSON').item.json.expression }}*"
             }
           ]
         }
