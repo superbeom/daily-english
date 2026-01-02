@@ -3,9 +3,9 @@
 이 문서는 프로젝트에서 사용하는 데이터베이스 스키마와 테이블의 상세 명세를 관리합니다.
 모든 SQL 변경 사항은 `database/` 폴더의 마이그레이션 파일뿐만 아니라, 이 문서에도 반영되어야 합니다.
 
-## Schema: `daily_english`
+## Schema: `speak_mango_en`
 
-**Description**: Daily English 프로젝트 전용 격리 스키마. 다른 프로젝트와 DB를 공유하기 위해 데이터를 분리합니다.
+**Description**: Speak Mango 프로젝트 전용 격리 스키마. 다른 프로젝트와 DB를 공유하기 위해 데이터를 분리합니다.
 
 ### Tables
 

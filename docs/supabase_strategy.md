@@ -7,7 +7,7 @@
 ### 핵심 개념
 
 - **물리적 통합**: 하나의 Supabase Pro Project ($25/월)를 모든 서비스가 공유합니다.
-- **논리적 분리**: 각 서비스는 고유한 **Schema** (예: `daily_english`, `nix_chat`)를 사용하여 데이터와 권한을 격리합니다.
+- **논리적 분리**: 각 서비스는 고유한 **Schema** (예: `speak_mango`, `nix_chat`)를 사용하여 데이터와 권한을 격리합니다.
 
 ## 2. 장점 (Pros)
 
@@ -15,43 +15,145 @@
 - **관리 용이성**: API Key, Billing, Dashboard를 한 곳에서 중앙 관리할 수 있습니다.
 - **유지보수**: Free Tier의 휴면(Pause) 문제를 방지할 수 있습니다.
 
-## 3. 구현 가이드 (Implementation Guide)
+## 3. Case Study: Speak Mango (Multi-Language Service)
 
-### 3.1. 스키마 생성 및 설정
+Speak Mango와 같이 **서브 도메인으로 언어별 서비스를 분리**하고, 콘텐츠가 서로 독립적이면서도 사용자 데이터를 공유해야 하는 경우의 전략입니다.
+
+### 3.1. 하이브리드 스키마 아키텍처 (Hybrid Schema Architecture)
+
+**"Global User, Local Content"** 전략을 사용하여 콘텐츠의 독립성과 사용자 경험의 통합성을 동시에 확보합니다.
+
+1.  **Content Schemas (Local)**: 각 언어별 학습 콘텐츠를 저장합니다.
+
+    - `speak_mango_en`: 영어 학습 콘텐츠 (예: `expressions` 테이블)
+    - `speak_mango_ko`: 한국어 학습 콘텐츠
+    - `speak_mango_es`: 스페인어 학습 콘텐츠
+    - **특징**: 서로 간섭하지 않으며, 독립적인 확장 및 수정이 가능합니다.
+
+2.  **Shared Schema (Global)**: 모든 언어 서비스가 공유하는 사용자 및 공통 데이터입니다.
+    - **Schema Name**: `speak_mango_shared`
+    - **Tables**:
+      - `profiles`: 사용자 프로필 (`auth.users`와 1:1 매핑)
+      - `vocabularies`: 통합 단어장 메타데이터
+      - `vocabulary_items`: 단어장 아이템 (`target_lang`으로 각 언어 스키마 참조)
+    - **특징**: 모든 서브 도메인 서비스에서 공통으로 접근하여 로그인 유지 및 통합 단어장 기능을 제공합니다.
+
+### 3.2. 통합 단어장 설계 예시
+
+`speak_mango_shared` 스키마 내의 `vocabulary_items` 테이블 구조입니다.
+
+```sql
+CREATE TABLE speak_mango_shared.vocabulary_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES speak_mango_shared.profiles(id),
+
+  -- Reference Logic
+  target_lang TEXT NOT NULL, -- 'en', 'ko', 'es' (어떤 스키마를 조회할지 결정)
+  expression_id UUID NOT NULL, -- 해당 스키마 내의 expression UUID
+
+  -- Caching (Optional, for list view performance)
+  cached_expression TEXT,
+  cached_meaning TEXT,
+
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+### 3.3. 장점
+
+- **유연성**: 영어 서비스와 한국어 서비스의 콘텐츠 구조(컬럼 등)가 달라도 문제없습니다.
+- **통합성**: 사용자는 하나의 계정으로 모든 언어의 학습 기록을 한곳에서 관리할 수 있습니다.
+- **안정성**: 특정 언어 서비스의 데이터 문제가 전체 사용자 DB나 다른 언어 서비스로 전파되지 않습니다.
+
+## 4. 서비스 간 회원 분리 전략 (Service Isolation)
+
+`auth.users` 테이블은 Supabase 프로젝트(`Lumio Studio`) 전체에서 공유되므로, 서로 다른 서비스(예: `Speak Mango` vs `Style Studio`)의 회원을 구분하는 전략이 필요합니다.
+
+### 4.1. 프로필 테이블을 통한 접근 제어 (Profile-Based Access)
+
+각 서비스의 스키마 내에 `profiles` 테이블을 별도로 생성하고, `auth.users` 테이블의 `id`를 외래키(Foreign Key)로 참조하여 1:1 관계를 맺습니다.
+
+**SQL 구현 예시:**
+
+```sql
+-- Speak Mango (Shared Schema)
+CREATE TABLE speak_mango_shared.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  nickname TEXT,
+  avatar_url TEXT
+);
+
+-- Style Studio (Isolated Schema)
+CREATE TABLE style_studio.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  style_preference TEXT,
+  body_measurements JSONB
+);
+```
+
+**핵심 원리:**
+
+- **`auth.users`**: 모든 서비스의 계정 정보가 저장되는 통합 저장소 (SSO 역할).
+- **`REFERENCES auth.users(id)`**: 프로필 테이블의 `id`가 실제 인증된 사용자의 `id`와 일치하도록 강제합니다.
+- **분리 효과**: 사용자가 `Speak Mango`에 가입하면 `speak_mango_shared.profiles`에만 레코드가 생성됩니다. 이 사용자가 `Style Studio`에 로그인하려 하면 `style_studio.profiles`에는 레코드가 없으므로 "미가입 상태"로 처리할 수 있습니다.
+- **`speak_mango_shared.profiles`**: Speak Mango 가입자만 레코드를 가짐.
+- **`style_studio.profiles`**: Style Studio 가입자만 레코드를 가짐.
+
+### 4.2. 동작 흐름 (Flow)
+
+1.  **로그인 시도**: 사용자가 Speak Mango에서 로그인을 시도합니다.
+2.  **Auth 체크**: `auth.users`에서 계정 인증 (성공).
+3.  **서비스 권한 체크**: `speak_mango_shared.profiles` 테이블에서 해당 `user_id` 조회.
+    - **데이터 있음**: 정상 로그인 처리.
+    - **데이터 없음**: "서비스 가입이 필요합니다" 메시지 출력 및 약관 동의/프로필 생성 페이지로 이동.
+
+> **💡 Naming Note: Why 'profiles' not 'users'?**
+> Supabase는 내부적으로 `auth.users`라는 시스템 테이블을 사용합니다. 혼동을 방지하고 "인증 정보(User)"와 "사용자 정보(Profile)"를 명확히 구분하기 위해, 애플리케이션 레벨의 테이블은 관례적으로 `profiles`라고 명명합니다.
+
+## 5. 구현 가이드 (Implementation Guide)
+
+### 5.1. 스키마 생성 및 설정
 
 각 프로젝트 시작 시, `public` 스키마 대신 전용 스키마를 생성합니다.
 
 ```sql
 -- 1. 스키마 생성
-CREATE SCHEMA daily_english;
+CREATE SCHEMA speak_mango_en;
+CREATE SCHEMA speak_mango_shared;
 
 -- 2. 권한 설정 (선택사항: 특정 역할에만 접근 허용 시)
-GRANT USAGE ON SCHEMA daily_english TO anon, authenticated, service_role;
-GRANT ALL ON ALL TABLES IN SCHEMA daily_english TO anon, authenticated, service_role;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA daily_english TO anon, authenticated, service_role;
-GRANT ALL ON ALL ROUTINES IN SCHEMA daily_english TO anon, authenticated, service_role;
+GRANT USAGE ON SCHEMA speak_mango_en TO anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA speak_mango_en TO anon, authenticated, service_role;
+-- (Shared 스키마도 동일하게 설정)
+GRANT USAGE ON SCHEMA speak_mango_shared TO anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA speak_mango_shared TO anon, authenticated, service_role;
 ```
 
-### 3.2. API 노출 설정 (Exposing Schema)
+### 5.2. API 노출 설정 (Exposing Schema)
 
 Supabase 대시보드에서 해당 스키마를 API로 접근 가능하도록 설정해야 합니다.
 
 1.  **Settings** -> **Data API** 로 이동
 2.  **Exposed schemas** 섹션 찾기
-3.  `public` 외에 추가한 스키마(예: `daily_english`)를 리스트에 추가
+3.  `public` 외에 추가한 스키마(예: `speak_mango_en`, `speak_mango_shared`)를 리스트에 추가
 4.  저장 (Save)
 
-### 3.3. 클라이언트 연결 (Client Setup)
+### 5.3. 클라이언트 연결 (Client Setup)
 
+#### Scenario A: Single Schema (Basic)
+
+대부분의 프로젝트처럼 하나의 서비스가 하나의 스키마만 사용하는 경우입니다. (예: `nix_chat`)
 클라이언트(Frontend/Backend)에서 Supabase 초기화 시 스키마를 명시하거나, 쿼리 시 스키마를 지정해야 합니다.
 유지보수성을 위해 스키마 이름은 `lib/constants.ts`에서 상수로 중앙 관리합니다.
 
 **`lib/constants.ts`**:
+
 ```typescript
-export const DATABASE_SCHEMA = "daily_english";
+export const DATABASE_SCHEMA = "nix_chat";
 ```
 
 **`lib/supabase/client.ts` (Browser Client)**:
+
 ```typescript
 import { createBrowserClient } from "@supabase/ssr";
 import { DATABASE_SCHEMA } from "@/lib/constants";
@@ -65,9 +167,18 @@ export function createBrowserSupabase() {
     }
   );
 }
+
+/**
+ * [Browser Client 사용 예시]
+ * import { createBrowserSupabase } from "@/lib/supabase/client";
+ *
+ * const supabase = createBrowserSupabase(); // uses 'nix_chat' schema
+ * const { data } = await supabase.from('messages').select('*');
+ */
 ```
 
 **`lib/supabase/server.ts` (Server Client)**:
+
 ```typescript
 // ... imports ...
 import { DATABASE_SCHEMA } from "@/lib/constants";
@@ -79,12 +190,122 @@ export async function createServerSupabase() {
     // ...
   });
 }
+
+/**
+ * [Server Client 사용 예시]
+ * import { createServerSupabase } from "@/lib/supabase/server";
+ *
+ * const supabase = await createServerSupabase(); // uses 'nix_chat' schema
+ * const { data } = await supabase.from('messages').select('*');
+ */
 ```
 
-## 4. 확장 및 졸업 (Migration & Graduation)
+#### Scenario B: Multi Schema (Advanced)
+
+Speak Mango처럼 서비스 데이터(`speak_mango_en`)와 공유 데이터(`speak_mango_shared`)를 함께 다루는 경우입니다.
+`createBrowserSupabase` 및 `createServerSupabase` 함수가 스키마 이름을 인자로 받아 동적으로 클라이언트를 생성합니다.
+
+**`lib/constants.ts`**:
+
+```typescript
+export const DATABASE_SCHEMA = "speak_mango_en"; // 각 서비스에 맞게 설정 (Local)
+export const SHARED_SCHEMA = "speak_mango_shared"; // 공유 스키마 (Global)
+```
+
+**`lib/supabase/client.ts` (Browser Client)**:
+
+```typescript
+import { createBrowserClient } from "@supabase/ssr";
+import { DATABASE_SCHEMA } from "@/lib/constants";
+
+// schema 인자를 추가하여 필요에 따라 공유 스키마에 접근 가능하게 합니다. (기본값: 로컬 콘텐츠 스키마)
+export function createBrowserSupabase(schema: string = DATABASE_SCHEMA) {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      db: { schema },
+    }
+  );
+}
+
+/**
+ * [Browser Client 사용 예시]
+ *
+ * 1. 로컬 콘텐츠 가져오기 (speak_mango_en)
+ * const supabase = createBrowserSupabase();
+ * const { data } = await supabase.from('expressions').select('*');
+ *
+ * 2. 공유 사용자 프로필 가져오기 (speak_mango_shared)
+ * import { SHARED_SCHEMA } from "@/lib/constants";
+ * const sharedSupabase = createBrowserSupabase(SHARED_SCHEMA);
+ * const { data: profile } = await sharedSupabase.from('profiles').select('*').single();
+ */
+```
+
+**`lib/supabase/server.ts` (Server Client)**:
+
+```typescript
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { DATABASE_SCHEMA } from "@/lib/constants";
+
+export async function createServerSupabase(schema: string = DATABASE_SCHEMA) {
+  const cookieStore = await cookies();
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      db: { schema },
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            /* 서버 컴포넌트에서 호출 시 예외 처리 */
+          }
+        },
+      },
+    }
+  );
+}
+
+/**
+ * [Server Client 사용 예시]
+ *
+ * // app/page.tsx (Server Component)
+ * import { createServerSupabase } from "@/lib/supabase/server";
+ * import { SHARED_SCHEMA } from "@/lib/constants";
+ *
+ * export default async function Page() {
+ *   // 1. 로컬 콘텐츠 (expressions)
+ *   const supabase = await createServerSupabase();
+ *   const { data: expressions } = await supabase.from('expressions').select('*');
+ *
+ *   // 2. 공유 데이터 (profiles) - 필요한 경우
+ *   const sharedSupabase = await createServerSupabase(SHARED_SCHEMA);
+ *   const { data: user } = await sharedSupabase.auth.getUser();
+ *   const { data: profile } = await sharedSupabase
+ *     .from('profiles')
+ *     .select('*')
+ *     .eq('id', user.user?.id)
+ *     .single();
+ *
+ *   return <div>...</div>;
+ * }
+ */
+```
+
+## 6. 확장 및 졸업 (Migration & Graduation)
 
 특정 서비스의 트래픽이 급증하여 다른 서비스에 영향을 줄 경우:
 
-1.  **덤프 (Dump)**: 해당 스키마(`daily_english`)의 데이터만 백업합니다.
+1.  **덤프 (Dump)**: 해당 스키마(`speak_mango_en`)의 데이터만 백업합니다.
 2.  **이관 (Migrate)**: 새로운 Supabase 프로젝트를 생성하여 데이터를 복원합니다.
 3.  **연결 변경**: 해당 서비스의 환경 변수(`SUPABASE_URL` 등)만 새 프로젝트로 교체합니다.

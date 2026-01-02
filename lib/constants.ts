@@ -1,4 +1,5 @@
-export const DATABASE_SCHEMA = "daily_english";
+export const SERVICE_NAME = "Speak Mango";
+export const DATABASE_SCHEMA = "speak_mango_en";
 
 export const DOMAINS = ["all", "conversation", "test", "vocabulary"];
 

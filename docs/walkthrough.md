@@ -2,6 +2,56 @@
 
 > 각 버전별 구현 내용과 변경 사항을 상세히 기록합니다. 최신 버전이 상단에 옵니다.
 
+## v0.7.0: 브랜드 리뉴얼 및 다국어 확장 아키텍처 수립 (2026-01-02)
+
+### 1. 서비스 브랜드 리뉴얼
+
+- **명칭 변경**: `Daily English`에서 **`Speak Mango`**로 서비스명을 공식 변경.
+- **상수화**: `lib/constants.ts`에 `SERVICE_NAME` 상수를 추가하여 UI 및 메타데이터에서 일관되게 참조하도록 개선.
+- **메타데이터 업데이트**: `app/layout.tsx`의 타이틀 및 설명을 새로운 브랜드명에 맞춰 업데이트.
+
+### 2. 다국어 확장 및 서비스 격리 전략 수립
+
+- **스키마 설계**:
+  - 콘텐츠 스키마(`speak_mango_en`, `speak_mango_ko` 등)와 사용자 공유 스키마(`speak_mango_shared`)를 분리하는 하이브리드 아키텍처 도입.
+  - `auth.users`를 공유하되 스키마별 `profiles` 테이블(외래키 참조)을 통해 서비스 가입자를 구분하는 보안 전략 수립.
+- **클라이언트 고도화**:
+  - `createBrowserSupabase` 및 `createServerSupabase` 함수가 스키마 이름을 인자로 받아 동적으로 전환할 수 있도록 리팩토링.
+  - 단일 스키마(Scenario A)와 다중 스키마(Scenario B) 사용 예시를 문서화(`docs/supabase_strategy.md`).
+
+### 3. 데이터베이스 마이그레이션
+
+- **스키마 변경**: 기존 `daily_english` 스키마를 `speak_mango_en`으로 변경하는 마이그레이션 스크립트 작성 (`database/008_rename_schema_to_speak_mango.sql`).
+- **권한 재설정**: 변경된 스키마 명칭에 맞춰 API 및 n8n 접근 권한(`GRANT`)을 일괄 재부여.
+
+## v0.6.6: Header 리팩토링 및 추천 섹션 UI 개선 (2026-01-02)
+
+### 1. Header 컴포넌트 독립 분리
+
+- **`components/Header.tsx`**: 메인 페이지와 상세 페이지에서 중복 사용되던 헤더 로직을 독립 컴포넌트로 분리.
+- **Overlap 이슈 해결**: 헤더의 `z-index`를 `z-50`으로 상향 조정하여, 스크롤 시 카드 컴포넌트(특히 카테고리 라벨)가 헤더 위로 노출되는 문제 해결.
+
+### 2. 관련 표현 추천 UI 고도화
+
+- **`components/RelatedExpressions.tsx`**:
+  - 상세 페이지 하단의 추천 섹션을 별도 컴포넌트로 분리.
+  - 가로 스크롤(`overflow-x-auto`)을 적용하고 각 카드에 최소 가로 폭(`min-w`)을 설정하여 찌그러짐 방지.
+  - `FilterBar`와 동일하게 양옆 **Fade 효과**를 추가하여 스크롤 가능 여부를 시각적으로 표시.
+- **데이터 확보**: 추천 리스트의 풍부함을 위해 페칭 제한을 6개로 상향.
+
+## v0.6.5: 관련 표현 추천 기능 구현 (2026-01-02)
+
+### 1. 데이터 로직 확장
+
+- **`lib/expressions.ts`**: `getRelatedExpressions(currentId, category)` 함수 추가. 동일한 카테고리의 표현을 최대 3개까지 가져오며, 현재 보고 있는 표현은 결과에서 제외하도록 쿼리 작성.
+
+### 2. UI 구현
+
+- **`app/expressions/[id]/page.tsx`**:
+  - 상세 페이지 하단에 '📚 이런 표현은 어때요?' 섹션 추가.
+  - `ExpressionCard`를 재사용하여 일관된 디자인 유지.
+- **i18n 지원**: `ko.ts`, `en.ts`에 섹션 타이틀(`relatedTitle`) 다국어 문자열 추가.
+
 ## v0.6.4: Framer Motion을 활용한 애니메이션 고도화 (2026-01-02)
 
 ### 1. 애니메이션 인프라 구축
@@ -169,7 +219,7 @@
 ### 2. Supabase 클라이언트 유틸리티 구현
 
 - **`lib/supabase/client.ts`**: `createBrowserSupabase` - 브라우저 환경용 클라이언트 설정.
-- **`lib/supabase/server.ts`**: `createServerSupabase` - 서버 컴포넌트 및 SSR용 클라이언트 설정 (Next.js 15+ `cookies()` 비동기 대응).
+- **`lib/supabase/server.ts`**: `createServerSupabase` - 서버 컴포넌트 및 SSR용 클라이언트 설정 (Next.js 16+ `cookies()` 비동기 대응).
 
 ### 3. 환경 변수 템플릿 생성
 
@@ -177,7 +227,7 @@
 
 ## v0.1.0: 프로젝트 스캐폴딩 및 설계 (2025-12-30)
 
-- Command: `npx create-next-app@latest daily-english --ts --tailwind --eslint --app --no-src-dir`
+- Command: `npx create-next-app@latest speak-mango-en --ts --tailwind --eslint --app --no-src-dir`
 - 기본 설정: TypeScript, Tailwind CSS, App Router 사용.
 
 ### 2. 문서화 (Documentation)

@@ -1,6 +1,6 @@
 # Context Restoration & Rule Enforcement
 
-이 워크플로우는 `daily-english` 프로젝트의 모든 컨텍스트 파일을 로드하고, 개발 에이전트로서 준수해야 할 규칙을 재확립합니다.
+이 워크플로우는 `speak-mango-en` 프로젝트의 모든 컨텍스트 파일을 로드하고, 개발 에이전트로서 준수해야 할 규칙을 재확립합니다.
 
 ## 1. Load Context Files
 

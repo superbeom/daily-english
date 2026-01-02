@@ -1,12 +1,13 @@
 {
-  "name": "daily-english",
+  "name": "speak-mango-en",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "clear": "rm -rf .next"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
