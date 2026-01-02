@@ -1,5 +1,5 @@
 {
-  "name": "Daily English",
+  "name": "Speak Mango",
   "nodes": [
     {
       "parameters": {
@@ -87,7 +87,7 @@
     {
       "parameters": {
         "useCustomSchema": true,
-        "schema": "daily_english",
+        "schema": "speak_mango_en",
         "operation": "getAll",
         "tableId": "expressions",
         "returnAll": true,
@@ -148,7 +148,7 @@
     {
       "parameters": {
         "useCustomSchema": true,
-        "schema": "daily_english",
+        "schema": "speak_mango_en",
         "tableId": "expressions",
         "dataToSend": "autoMapInputData"
       },

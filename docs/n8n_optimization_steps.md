@@ -287,7 +287,7 @@ Gemini가 JSON을 문자열(`text`)로 반환할 경우를 대비하여 **Code**
 `Parse JSON` 노드 뒤에 **Supabase** 노드를 연결하여 최종 데이터를 저장합니다.
 
 - **Name**: `Supabase Insert`
-- **Schema**: `daily_english`
+- **Schema**: `speak_mango_en`
 - **Resource**: `Row`
 - **Operation**: `Create`
 - **Table Name or ID**: `expressions`

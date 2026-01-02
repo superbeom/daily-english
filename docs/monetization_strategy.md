@@ -36,16 +36,19 @@ class SupabaseStorageAdapter implements StorageAdapter { ... }
 
 ## 3. Database Schema Extension (Supabase)
 
-기존 `daily_english` 스키마에 사용자 데이터를 관리하기 위한 테이블을 추가합니다.
+기존 `speak_mango_en` 스키마에 사용자 데이터를 관리하기 위한 테이블을 추가합니다.
 
 ### 3.1. `profiles` (User Management)
 
-Supabase Auth의 `users` 테이블과 1:1 매핑됩니다.
+Supabase Auth의 `users` 테이블 (`auth.users`) 테이블과 1:1 매핑되는 사용자 정보 테이블입니다. **공유 스키마(`speak_mango_shared`)**에서 관리합니다.
 
 ```sql
-create table daily_english.profiles (
+create table speak_mango_shared.profiles (
+  -- auth.users의 id를 PK이자 FK로 사용하여 1:1 관계를 강제합니다.
   id uuid references auth.users not null primary key,
   tier text default 'free' check (tier in ('free', 'pro', 'admin')),
+  nickname text,
+  avatar_url text,
   created_at timestamptz default now()
   -- 추후 PayPal Subscription ID 등 추가
 );
@@ -56,9 +59,9 @@ create table daily_english.profiles (
 사용자가 저장한 표현 목록입니다.
 
 ```sql
-create table daily_english.user_bookmarks (
-  user_id uuid references daily_english.profiles(id) on delete cascade,
-  expression_id uuid references daily_english.expressions(id) on delete cascade,
+create table speak_mango_shared.user_bookmarks (
+  user_id uuid references speak_mango_shared.profiles(id) on delete cascade,
+  expression_id uuid references speak_mango_en.expressions(id) on delete cascade,
   created_at timestamptz default now(),
   folder_name text default 'default', -- 추후 단어장 폴더 기능 대응
   primary key (user_id, expression_id)
@@ -70,10 +73,10 @@ create table daily_english.user_bookmarks (
 망각 곡선(Spaced Repetition System) 알고리즘 적용을 위한 학습 데이터입니다.
 
 ```sql
-create table daily_english.user_flashcards (
+create table speak_mango_shared.user_flashcards (
   id uuid default gen_random_uuid() primary key,
-  user_id uuid references daily_english.profiles(id) on delete cascade,
-  expression_id uuid references daily_english.expressions(id) on delete cascade,
+  user_id uuid references speak_mango_shared.profiles(id) on delete cascade,
+  expression_id uuid references speak_mango_en.expressions(id) on delete cascade,
   status text default 'learning' check (status in ('new', 'learning', 'review', 'graduated')),
   next_review_at timestamptz default now(), -- 다음 복습 시점
   interval integer default 0, -- 복습 간격 (일)

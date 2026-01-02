@@ -1,4 +1,4 @@
-# Content Strategy: Daily English
+# Content Strategy: Speak Mango
 
 벤치마킹 분석을 통해 도출된 "쉽고 재미있는" 영어 학습 콘텐츠의 표준 구조입니다.
 이 구조는 학생들이 부담 없이 학습하고, 실생활에서 바로 사용할 수 있도록 설계되었습니다.

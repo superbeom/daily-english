@@ -2,6 +2,28 @@
 
 > 각 버전별 구현 내용과 변경 사항을 상세히 기록합니다. 최신 버전이 상단에 옵니다.
 
+## v0.7.0: 브랜드 리뉴얼 및 다국어 확장 아키텍처 수립 (2026-01-02)
+
+### 1. 서비스 브랜드 리뉴얼
+
+- **명칭 변경**: `Daily English`에서 **`Speak Mango`**로 서비스명을 공식 변경.
+- **상수화**: `lib/constants.ts`에 `SERVICE_NAME` 상수를 추가하여 UI 및 메타데이터에서 일관되게 참조하도록 개선.
+- **메타데이터 업데이트**: `app/layout.tsx`의 타이틀 및 설명을 새로운 브랜드명에 맞춰 업데이트.
+
+### 2. 다국어 확장 및 서비스 격리 전략 수립
+
+- **스키마 설계**:
+  - 콘텐츠 스키마(`speak_mango_en`, `speak_mango_ko` 등)와 사용자 공유 스키마(`speak_mango_shared`)를 분리하는 하이브리드 아키텍처 도입.
+  - `auth.users`를 공유하되 스키마별 `profiles` 테이블(외래키 참조)을 통해 서비스 가입자를 구분하는 보안 전략 수립.
+- **클라이언트 고도화**:
+  - `createBrowserSupabase` 및 `createServerSupabase` 함수가 스키마 이름을 인자로 받아 동적으로 전환할 수 있도록 리팩토링.
+  - 단일 스키마(Scenario A)와 다중 스키마(Scenario B) 사용 예시를 문서화(`docs/supabase_strategy.md`).
+
+### 3. 데이터베이스 마이그레이션
+
+- **스키마 변경**: 기존 `daily_english` 스키마를 `speak_mango_en`으로 변경하는 마이그레이션 스크립트 작성 (`database/008_rename_schema_to_speak_mango.sql`).
+- **권한 재설정**: 변경된 스키마 명칭에 맞춰 API 및 n8n 접근 권한(`GRANT`)을 일괄 재부여.
+
 ## v0.6.6: Header 리팩토링 및 추천 섹션 UI 개선 (2026-01-02)
 
 ### 1. Header 컴포넌트 독립 분리
@@ -197,7 +219,7 @@
 ### 2. Supabase 클라이언트 유틸리티 구현
 
 - **`lib/supabase/client.ts`**: `createBrowserSupabase` - 브라우저 환경용 클라이언트 설정.
-- **`lib/supabase/server.ts`**: `createServerSupabase` - 서버 컴포넌트 및 SSR용 클라이언트 설정 (Next.js 15+ `cookies()` 비동기 대응).
+- **`lib/supabase/server.ts`**: `createServerSupabase` - 서버 컴포넌트 및 SSR용 클라이언트 설정 (Next.js 16+ `cookies()` 비동기 대응).
 
 ### 3. 환경 변수 템플릿 생성
 
@@ -205,7 +227,7 @@
 
 ## v0.1.0: 프로젝트 스캐폴딩 및 설계 (2025-12-30)
 
-- Command: `npx create-next-app@latest daily-english --ts --tailwind --eslint --app --no-src-dir`
+- Command: `npx create-next-app@latest speak-mango-en --ts --tailwind --eslint --app --no-src-dir`
 - 기본 설정: TypeScript, Tailwind CSS, App Router 사용.
 
 ### 2. 문서화 (Documentation)

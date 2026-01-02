@@ -1,11 +1,11 @@
-# Project Context & Rules: Daily English
+# Project Context & Rules: Speak Mango
 
-**최종 수정일**: 2025-12-30
+**최종 수정일**: 2026-01-02
 
 ## 1. 프로젝트 개요 (Project Overview)
 
-- **서비스명**: Daily English (매일 만나는 영어 표현)
-- **목적**: 영어 블로그 URL에서 유용한 표현을 자동으로 스크래핑 및 가공(AI)하여 업로드하는 자동화 블로그 구축.
+- **서비스명**: Speak Mango (매일 만나는 영어 표현)
+- **목적**: Speak Mango 플랫폼의 영어 학습 서브 서비스. 유용한 영어 표현을 자동으로 생성 및 가공(AI)하여 업로드하는 자동화 블로그 구축.
 - **핵심 가치**:
   - **자동화 (Automation)**: n8n + AI를 통해 콘텐츠 수집 및 가공 비용 최소화.
   - **학습 효율 (Efficiency)**: 매일 하나의 핵심 표현만 제공하여 학습 부담 감소.
@@ -33,7 +33,7 @@ graph TD
 
 ## 3. 기술 스택 (Tech Stack)
 
-- **Frontend**: Next.js 15 (App Router), TypeScript, Tailwind CSS.
+- **Frontend**: Next.js 16 (App Router), TypeScript, Tailwind CSS.
 - **Database**: Supabase (PostgreSQL).
 - **Automation**: n8n (Self-hosted or Cloud).
 - **AI Engine**: Google Gemini 2.5 Flash (Free Tier).
@@ -42,7 +42,7 @@ graph TD
 ## 4. 디렉토리 구조 (Directory Structure)
 
 ```
-daily-english/
+speak-mango-en/
 ├── app/                 # Next.js App Router Pages
 │   ├── page.tsx         # 메인 페이지 (표현 리스트)
 │   ├── layout.tsx       # 레이아웃
@@ -65,6 +65,7 @@ daily-english/
     ├── monetization_brainstorming.md # 수익화 브레인스토밍 및 Q&A (원본)
     ├── monetization_ideas.md # 수익화 및 성장 전략 아이디어 요약
     ├── monetization_strategy.md # 수익화 및 성장 전략 구현 로드맵
+    ├── n8n_optimization_steps.md # AI 기반 생성 가이드
     ├── n8n_workflow_guide.md # n8n 자동화 설정 가이드
 │   ├── agent_workflows.md   # AI 에이전트 워크플로우 가이드
 │   ├── supabase_strategy.md # Supabase 다중 프로젝트 관리 전략
@@ -107,7 +108,7 @@ daily-english/
 ### Database
 
 - **운영 전략**: `docs/supabase_strategy.md`에 따라 단일 Pro 프로젝트 내 **스키마 분리** 전략을 사용합니다.
-- **스키마 명**: `daily_english` (기본 public 스키마 사용 지양).
+- **스키마 명**: `speak_mango_en` (기본 public 스키마 사용 지양).
 
 ### Automation (n8n)
 
