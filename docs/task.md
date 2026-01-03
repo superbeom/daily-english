@@ -35,6 +35,7 @@
 - [x] **UI/UX**: Framer Motion을 활용한 리스트 애니메이션 적용
 - [x] **UI/UX**: 관련 표현 추천 (Related Expressions) 구현
 - [x] **UI/UX**: Sticky Header 및 FilterBar 고도화
+- [x] **UI/UX**: UI 스타일 중앙 관리 및 모바일 최적화 (유틸리티 클래스 & useIsMobile)
 - [x] **Documentation**: 에이전트 워크플로우(Commit/Doc Update) 최적화
 - [ ] **UI/UX**: 리스트 탐색 경험 개선 ('더 보기' 버튼)
 - [ ] **UI/UX**: 아카이브 / 인덱스 페이지 구현

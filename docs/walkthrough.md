@@ -2,6 +2,29 @@
 
 > 각 버전별 구현 내용과 변경 사항을 상세히 기록합니다. 최신 버전이 상단에 옵니다.
 
+## v0.7.2: UI 스타일 중앙 관리 및 모바일 최적화 (2026-01-03)
+
+### 1. Style Centralization (Utility Classes)
+
+- **Semantic Utilities**: 반복되는 테마 스타일을 `globals.css`에 유틸리티 클래스로 정의하여 유지보수성 향상.
+  - `bg-surface`: 메인 카드 및 입력창 배경 (`white` / `zinc-900`)
+  - `bg-subtle`: 보조 카드 및 태그 배경 (`zinc-50` / `zinc-800/50`)
+  - `bg-muted`: 호버 효과 및 강조 배경 (`zinc-100` / `zinc-800`)
+  - `border-main`: 기본 테두리 (`zinc-200` / `zinc-800`)
+  - `border-subtle`: 약한 테두리 및 구분선 (`zinc-100` / `zinc-800`)
+  - `text-body`: 본문 텍스트 (`zinc-800` / `zinc-200`)
+  - `text-secondary`: 설명 및 보조 텍스트 (`zinc-600` / `zinc-400`)
+
+### 2. Reliable Mobile Detection
+
+- **Custom Hooks**: `useMediaQuery`와 `useIsMobile` 훅을 구현하여 화면 크기에 따른 로직 분기 처리.
+- **Hydration Safety**: `SyncExternalStore`와 초기값 `undefined` 처리를 통해 SSR 환경에서의 하이드레이션 오류 방지.
+- **Responsive Layout**: `RelatedExpressions` 컴포넌트에서 모바일일 경우 세로 리스트, 데스크탑일 경우 Marquee 스크롤로 자동 전환되도록 개선.
+
+### 3. Documentation Workflow Update
+
+- **Ideas Management**: `update_docs` 워크플로우에 `feature_ideas.md`를 추가하고, 구현된 기능을 자동으로 필터링하도록 규칙 가이드 업데이트.
+
 ## v0.7.1: 아키텍처 정비 및 Sticky UI 고도화 (2026-01-03)
 
 ### 1. Architectural Restructuring
