@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Expression } from "@/types/database";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import ExpressionCard from "@/components/ExpressionCard";
 
 interface RelatedExpressionsProps {
@@ -38,13 +39,15 @@ export default function RelatedExpressions({
   locale,
   title,
 }: RelatedExpressionsProps) {
+  const isMobile = useIsMobile();
+
   const [showLeftFade, setShowLeftFade] = useState(false);
   const [showRightFade, setShowRightFade] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
 
-  // 무한 루프를 위해 데이터를 복제합니다.
+  // 무한 루프를 위해 데이터를 복제합니다. (데스크탑 전용)
   // 데이터가 너무 적으면 화면을 다 채우지 못할 수 있으므로 최소 2회 복제
   const displayExpressions = [...expressions, ...expressions];
 
@@ -58,6 +61,9 @@ export default function RelatedExpressions({
   }, []);
 
   useEffect(() => {
+    // 모바일이거나 아직 화면 크기를 모르면(undefined) 자동 스크롤 로직 실행 안 함
+    if (isMobile === undefined || isMobile) return;
+
     checkScroll();
 
     const el = scrollContainerRef.current;
@@ -92,18 +98,37 @@ export default function RelatedExpressions({
     }
 
     return () => cancelAnimationFrame(animationRef.current);
-  }, [isHovered, expressions, checkScroll]);
+  }, [isHovered, expressions, checkScroll, isMobile]);
 
   useEffect(() => {
+    if (isMobile === undefined || isMobile) return;
     window.addEventListener("resize", checkScroll);
     return () => window.removeEventListener("resize", checkScroll);
-  }, [checkScroll]);
+  }, [checkScroll, isMobile]);
 
+  // 화면 크기 확인 전까지는 아무것도 렌더링하지 않음 (Hydration Mismatch 방지)
+  if (isMobile === undefined) return null;
+
+  // 모바일 뷰: 세로 리스트
+  if (isMobile) {
+    return (
+      <section className="mt-12 pt-12 border-t border-main">
+        <h2 className="mb-6 text-xl font-bold text-main">{title}</h2>
+        <div className="grid grid-cols-1 gap-4">
+          {expressions.map((item) => (
+            <div key={item.id}>
+              <ExpressionCard item={item} locale={locale} />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  // 데스크탑 뷰: 가로 자동 스크롤 (Marquee)
   return (
-    <section className="mt-16 pt-16 border-t border-zinc-200 dark:border-zinc-800">
-      <h2 className="mb-4 px-4 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-        {title}
-      </h2>
+    <section className="mt-16 pt-16 border-t border-main">
+      <h2 className="mb-4 px-4 text-2xl font-bold text-main">{title}</h2>
 
       <div
         className="relative group/scroll"
@@ -112,13 +137,13 @@ export default function RelatedExpressions({
       >
         {/* Left Fade */}
         <div
-          className={`absolute left-0 top-0 bottom-0 w-16 bg-linear-to-r from-zinc-50 to-transparent dark:from-black z-10 pointer-events-none transition-opacity duration-300 ${
+          className={`absolute left-0 top-0 bottom-0 w-16 bg-linear-to-r fade-mask-base ${
             showLeftFade ? "opacity-100" : "opacity-0"
           }`}
         />
         {/* Right Fade */}
         <div
-          className={`absolute right-0 top-0 bottom-0 w-16 bg-linear-to-l from-zinc-50 to-transparent dark:from-black z-10 pointer-events-none transition-opacity duration-300 ${
+          className={`absolute right-0 top-0 bottom-0 w-16 bg-linear-to-l fade-mask-base ${
             showRightFade ? "opacity-100" : "opacity-0"
           }`}
         />

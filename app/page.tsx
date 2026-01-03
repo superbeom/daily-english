@@ -41,12 +41,8 @@ export default async function Home({ searchParams }: PageProps) {
       {/* Main Content */}
       <main className="mx-auto max-w-layout px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-10">
-          <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
-            {dict.home.title}
-          </h2>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            {dict.home.description}
-          </p>
+          <h2 className="text-3xl font-bold text-main">{dict.home.title}</h2>
+          <p className="mt-2 text-secondary">{dict.home.description}</p>
         </div>
 
         {/* Filter & Search Bar */}
@@ -59,7 +55,7 @@ export default async function Home({ searchParams }: PageProps) {
         </Suspense>
 
         {expressions.length === 0 ? (
-          <div className="flex h-64 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-zinc-200 dark:border-zinc-800">
+          <div className="flex h-64 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-main">
             <p className="text-zinc-500 text-lg font-medium">
               {dict.home.emptyState}
             </p>

@@ -107,13 +107,13 @@ export default function FilterBar({ locale }: FilterBarProps) {
         <div className="relative">
           {/* Left Fade */}
           <div
-            className={`absolute left-0 top-0 bottom-0 w-12 bg-linear-to-r from-zinc-50 to-transparent dark:from-black z-10 pointer-events-none transition-opacity duration-300 ${
+            className={`absolute left-0 top-0 bottom-0 w-12 bg-linear-to-r fade-mask-base ${
               showLeftFade ? "opacity-100" : "opacity-0"
             }`}
           />
           {/* Right Fade */}
           <div
-            className={`absolute right-0 top-0 bottom-0 w-12 bg-linear-to-l from-zinc-50 to-transparent dark:from-black z-10 pointer-events-none transition-opacity duration-300 ${
+            className={`absolute right-0 top-0 bottom-0 w-12 bg-linear-to-l fade-mask-base ${
               showRightFade ? "opacity-100" : "opacity-0"
             }`}
           />
@@ -149,7 +149,7 @@ export default function FilterBar({ locale }: FilterBarProps) {
                       ${
                         isActive
                           ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-black border-zinc-900 dark:border-zinc-100 shadow-sm"
-                          : "bg-white dark:bg-zinc-900 text-zinc-500 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
+                          : "bg-surface text-zinc-500 border border-main hover:border-zinc-300 dark:hover:border-zinc-700"
                       }
                     `}
                   >
